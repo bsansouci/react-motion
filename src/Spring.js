@@ -93,7 +93,6 @@ export const Spring = React.createClass({
   },
 
   componentWillUnmount() {
-    this.stopAnimation();
     this.hasUnmounted = true;
   },
 
@@ -290,7 +289,7 @@ export const TransitionSpring = React.createClass({
   },
 
   componentWillUnmount() {
-    this.stopAnimation();
+    this.hasUnmounted = true;
   },
 
   startAnimating() {
