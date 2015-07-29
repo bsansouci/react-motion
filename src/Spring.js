@@ -88,7 +88,10 @@ export const Spring = React.createClass({
     this.startAnimating();
   },
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps({currVelocity}) {
+    if (currVelocity != null) {
+      this.forceUpdateCurrVelocity = currVelocity;
+    }
     this.startAnimating();
   },
 
@@ -194,11 +197,16 @@ export const Spring = React.createClass({
     }
 
     const newCurrValue = updateCurrValue(timestep, currValue, currVelocity, endValue);
-    const newCurrVelocity = updateCurrVelocity(timestep, currValue, currVelocity, endValue);
+    let newCurrVelocity = updateCurrVelocity(timestep, currValue, currVelocity, endValue);
 
     if (noVelocity(newCurrVelocity)) {
       // This will prevent the `animationLoop` from stepping
       this.active = false; // Nasty side effects...
+    }
+
+    if (this.forceUpdateCurrVelocity != null) {
+      newCurrVelocity = this.forceUpdateCurrVelocity(newCurrVelocity);
+      this.forceUpdateCurrVelocity = null; // @bsansouci: I hate this
     }
 
     return {
@@ -284,7 +292,10 @@ export const TransitionSpring = React.createClass({
     this.startAnimating();
   },
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps({currVelocity}) {
+    if (currVelocity) {
+      this.forceUpdateCurrVelocity = currVelocity;
+    }
     this.startAnimating();
   },
 
@@ -408,11 +419,16 @@ export const TransitionSpring = React.createClass({
       });
 
     const newCurrValue = updateCurrValue(timestep, currValue, currVelocity, mergedValue);
-    const newCurrVelocity = updateCurrVelocity(timestep, currValue, currVelocity, mergedValue);
+    let newCurrVelocity = updateCurrVelocity(timestep, currValue, currVelocity, mergedValue);
 
     if (!hasNewKey && noVelocity(newCurrVelocity)) {
       // check explanation in `Spring.animationRender`
       this.active = false; // Nasty side effects...
+    }
+
+    if (this.forceUpdateCurrVelocity != null) {
+      newCurrVelocity = this.forceUpdateCurrVelocity(newCurrVelocity);
+      this.forceUpdateCurrVelocity = null; // @bsansouci: I hate this
     }
 
     return {
